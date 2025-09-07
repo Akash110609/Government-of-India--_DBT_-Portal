@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Govt DBT Awareness Portal</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #fa06e6;
+            --header-bg: #003366;
+            --nav-bg: #006699;
+            --footer-bg: #001f3f;
+            --button-bg: #0055aa;
+            --button-hover: #0077ff;
+            --section-bg: #97969b;
+            --section-text: #000;
+            --news-gradient: linear-gradient(90deg, #006699, #0099cc);
+            --chat-body-bg: #f9f9f9;
+            --heading-bg: var(--section-bg);
+
+            --DBT-vs-ALelement.style {
+                background: #f0f0f0;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+
+        }
+
+        /* Dark mode overrides */
+        body.dark {
+            --bg-color: #080724;
+            --text-color: #e2e6ebcc;
+            --header-bg: #111;
+            --nav-bg: #222;
+            --footer-bg: #111;
+            --button-bg: #0066cc;
+            --button-hover: #0ad0f3;
+            --section-bg: #1d18184d;
+            --section-text: #f3ebeb;
+            --news-gradient: linear-gradient(90deg, #111, #444);
+            --chat-body-bg: #3a2ab6;
+            --heading-bg: #6f16aa;
+
+            --DBT-vs-ALelement.style {
+                background: #100d2b;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+            position: relative;
+        }
+
+        /* Background slideshow */
+        #bgSlideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            animation: slide 20s infinite;
+        }
+
+        @keyframes slide {
+            0% {
+                background-image: url('https://via.placeholder.com/1920x1080?text=Background1');
+            }
+
+            25% {
+                background-image: url('https://via.placeholder.com/1920x1080?text=Background2');
+            }
+
+            50% {
+                background-image: url('https://via.placeholder.com/1920x1080?text=Background3');
+            }
+
+            75% {
+                background-image: url('https://via.placeholder.com/1920x1080?text=Background4');
+            }
+
+            100% {
+                background-image: url('https://via.placeholder.com/1920x1080?text=Background1');
+            }
+        }
+
+        /* News ticker - moved further down for all devices */
+        #newsTicker {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 0;
+            position: fixed;
+            top: 120px;
+            /* increased from 80px to move further below nav */
+            z-index: 10;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        #newsTicker span {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: scroll 30s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Header with logos and menu toggle */
+        header {
+            background: var(--header-bg);
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section img {
+            height: 50px;
+            transition: transform 0.3s;
+        }
+
+        .logo-section img:hover {
+            transform: scale(1.1);
+        }
+
+        h1 {
+            margin: 0 0 0 20px;
+            font-family: 'Arial Black', sans-serif;
+            color: #fff;
+        }
+
+        #menuToggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #fff;
+        }
+
+        nav {
+            background: var(--nav-bg);
+            display: flex;
+            flex-wrap: wrap;
+            padding: 8px 20px;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        nav a:hover {
+            background: #005577;
+        }
+
+        /* Responsive nav for small screens */
+        @media(max-width:768px) {
+            #menuToggle {
+                display: block;
+            }
+
+            nav {
+                display: none;
+                flex-direction: column;
+            }
+
+            nav.show {
+                display: flex;
+            }
+        }
+
+        /* Main content area */
+        .main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+            margin-top: 180px;
+            /* increased margin to accommodate new news bar position */
+            position: relative;
+            z-index: 10;
+        }
+
+        section {
+            background: var(--section-bg);
+            color: var(--section-text);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #006699;
+        }
+
+        button {
+            background: var(--button-bg);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--button-hover);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Footer styling */
+        footer {
+            background: var(--footer-bg);
+            color: #ccc;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        footer h3 {
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        footer a {
+            display: block;
+            color: #ffd700;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Floating chat help buttons */
+        #whatsappBtn,
+        #chatbotBtn {
+            position: fixed;
+            bottom: 20px;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        #whatsappBtn {
+            right: 20px;
+            background: #25D366;
+        }
+
+        #chatbotBtn {
+            right: 90px;
+            background: #4CAF50;
+        }
+
+        #whatsappBtn:hover,
+        #chatbotBtn:hover {
+            opacity: 0.9;
+        }
+
+        /* Chat window styles */
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background: #000102;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .chat-header {
+            background: #006699;
+            /* color: #fff; */
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            /* background: #f9f9f9; */
+            font-size: 0.9em;
+
+        }
+
+        .chat-input {
+            border: none;
+            border-top: 1px solid #ccc;
+            padding: 8px;
+            width: 100%;
+            font-size: 1em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments if needed */
+        @media(max-width:768px) {
+            #bgSlideshow {
+                height: 100%;
+            }
+
+            #mainContent {
+                margin-top: 220px;
+            }
+
+            .chat-window {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background slideshow -->
+    <div id="bgSlideshow"></div>
+
+    <!-- News ticker, moved further below navigation -->
+    <div id="newsTicker"><span id="newsText">Breaking News: Welcome to Govt DBT Portal! | <a
+                href="https://www.india.gov.in/" target="_blank" style="color:#fff; text-decoration:underline;">More
+                updates</a></span></div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo-section">
+            <a href="https://india.gov.in/" target="_blank" rel="noopener" title="Government of India">
+                <img src="./govemblem.jpeg" alt="Gov India" />
+            </a>
+            <a href="https://dbtbharat.gov.in/" target="_blank" rel="noopener" title="DBT Bharat Portal">
+                <img src="./DBTlogo.jpg" alt="DBT Logo" />
+            </a>
+        </div>
+        <h1>Government of India - DBT Portal</h1>
+        <div style="display:flex; align-items:center;">
+            <div id="menuToggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+            <button onclick="toggleDarkMode()" title="Dark Mode"><i class="fas fa-moon"></i></button>
+            <button onclick="changeLanguage('en')">EN</button>
+            <button onclick="changeLanguage('hi')">HI</button>
+            <button onclick="changeLanguage('es')">ES</button>
+            <button onclick="changeLanguage('fr')">FR</button>
+            <button onclick="changeLanguage('bn')">BN</button>
+        </div>
+    </header>
+
+    <!-- Responsive Navigation -->
+    <nav id="mainNav">
+        <a href="#" onclick="loadPage('home')">Home</a>
+        <a href="#" onclick="loadPage('status')">Status Tracker</a>
+        <a href="#" onclick="loadPage('comparison')">DBT vs Aadhar</a>
+        <a href="#" onclick="loadPage('posters')">Posters</a>
+        <a href="#" onclick="loadPage('guidelines')">Guidelines</a>
+        <a href="#" onclick="loadPage('faq')">DBT FAQs</a>
+        <a href="#" onclick="loadPage('troubleshoot')">Troubleshooting Guide</a>
+        <a href="#" onclick="loadPage('contact')">Contact</a>
+    </nav>
+
+    <!-- Homepage Slideshow -->
+    <div id="homepageSlideshow"></div>
+
+    <!-- Main Content -->
+    <div class="main" id="mainContent">
+        <h2>DBT सक्षम बनाम आधार लिंक्ड खाता तुलना।</h2>
+        <div style="background:#0c0c0c; padding:15px; border-radius:8px;">
+
+            <p>Here is a detailed comparison between a <b>DBT Enabled Account</b> and a <b>Aadhaar Linked Account</b>.
+            </p>
+
+            <h3>At a Glance: Key Differences</h3>
+            <table style="width:100%; border-collapse:collapse;">
+                <tbody>
+                    <tr style="background:#261b4e;">
+                        <th style="padding:8px; border:1px solid #f5f1f1;">Feature</th>
+                        <th style="padding:8px; border:1px solid #ccc;">DBT Enabled Account</th>
+                        <th style="padding:8px; border:1px solid #ccc;">Aadhaar Linked Account</th>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px; border:1px solid #ccc;">Primary Purpose</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Receive government subsidies and benefits
+                            directly</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Authenticate &amp; facilitate transactions</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px; border:1px solid #ccc;">What it is</td>
+                        <td style="padding:8px; border:1px solid #ccc;">A bank account registered with government for
+                            DBT payments</td>
+                        <td style="padding:8px; border:1px solid #ccc;">A bridge between your bank and Aadhaar via NPCI
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px; border:1px solid #ccc;">Mandatory Link</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Bank Account → Government DBT Portal</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Bank Account → Aadhaar → NPCI Mapper</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px; border:1px solid #ccc;">Main Use Case</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Receiving LPG subsidy, PM-KISAN, pensions,
+                            scholarships</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Micro ATM withdrawals, DBT receipt, UPI
+                            activation</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px; border:1px solid #ccc;">Optional?</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Largely Yes (register account with schemes)</td>
+                        <td style="padding:8px; border:1px solid #ccc;">Largely No, required for DBT &amp; AEPS</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Detailed Explanation</h3>
+            <p><b>1. DBT Enabled Account:</b> This is a policy-level concept. The government registers your account to
+                send benefits directly. It’s like your “postal address” for government benefits.</p>
+            <p><b>2. Aadhaar Linked Account:</b> This is the technical link between your Aadhaar and bank account,
+                enabling biometric transactions &amp; direct fund routing.</p>
+            <p>Linking Aadhaar to your bank account is foundational for a DBT-enabled account. You need to link your
+                Aadhaar with your bank, then register your account with schemes. Without this, direct benefits can't be
+                reliably transferred.</p>
+        </div>
+    </div>
+    <div><img src="./dbtVSal.png" alt="DBT सक्षम बनाम आधार लिंक्ड खाता तुलना।
+" , width="100%" ,height="100%"></div>
+
+    <!-- Floating Chat Help Buttons -->
+    <div>
+        <button id="whatsappBtn" title="Help via WhatsApp" onclick="redirectWhatsApp()"><i
+                class="fab fa-whatsapp"></i></button>
+        <button id="chatbotBtn" title="Chat with AI" onclick="toggleChat()"><i class="fas fa-robot"></i></button>
+    </div>
+
+    <!-- Chat Windows -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <span>AI Chatbot</span>
+            <button class="close-btn" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+        <input class="chat-input" id="chatInput" placeholder="Type your message"
+            onkeydown="if(event.key==='Enter'){sendChatMessage();}">
+    </div>
+
+    <div class="chat-window" id="whatsappWindow">
+        <div class="chat-header">
+            <span>WhatsApp Help Desk</span>
+            <button class="close-btn" onclick="toggleWhatsApp()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-body" id="whatsappBody">
+            <p>Hi! How can we assist you today?</p>
+        </div>
+        <input class="chat-input" id="whatsappInput" placeholder="Type your message"
+            onkeydown="if(event.key==='Enter'){sendWhatsAppMessage();}">
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-column">
+            <h3>About</h3>
+            <p>This portal provides information about DBT schemes and government services.</p>
+        </div>
+        <div class="footer-column">
+            <h3>Links</h3>
+            <a href="https://www.india.gov.in/" target="_blank" rel="noopener">Gov of India</a>
+            <a href="https://pib.gov.in/" target="_blank" rel="noopener">PIB</a>
+            <a href="https://www.mygov.in/" target="_blank" rel="noopener">MyGov</a>
+            <a href="https://npci.org.in/" target="_blank" rel="noopener">NPCI</a>
+            <a href="https://pfms.nic.in/" target="_blank" rel="noopener">PFMS</a>
+            <a href="https://uidai.gov.in/" target="_blank" rel="noopener">UIDAI</a>
+            <a href="#" onclick="window.open('https://bankwebsite.com/','_blank')">Bank of India</a>
+        </div>
+        <div class="footer-column">
+            <h3>Contact</h3>
+            <p>Email: support@dbt.gov.in</p>
+            <p>Phone: 1800-11-4455</p>
+            <p>Hours: 9AM - 6PM</p>
+        </div>
+        <div class="footer-column">
+            <p>&copy; 2024 Govt of India | DBT Awareness Portal</p>
+        </div>
+    </footer>
+
+    <script>
+        // Translation object omitted for brevity, same as previous
+
+        const translations = {
+            en: {
+                pageTitle: "DBT (Direct Benefit Transfer) Awareness",
+                home: "Welcome to the DBT portal. Use the menu to explore.",
+                status: "Track your DBT status, view updates, and official info.",
+                comparison: "DBT Enabled vs Aadhar Linked Account comparison.",
+                posters: "Download educational posters about DBT & Aadhaar.",
+                guidelines: "Usage guidelines for DBT & Aadhaar linking.",
+                support: "Support and help desk information.",
+                contact: "Contact us: support@dbt.gov.in, 1800-11-4455.",
+                statusTitle: "Track Your DBT Status",
+                statusDesc: "Enter your Aadhaar number below to check status.",
+                searchBtn: "Search Status",
+                viewDetails: "View Details",
+                downloadPosters: "Download Posters",
+                viewGuidelines: "View Guidelines",
+                supportFAQs: "Support & FAQs",
+                contactTitle: "Contact",
+                supportHelp: "Support & Help Desk",
+            },
+            hi: {
+                pageTitle: "DBT (डायरेक्ट बेनेफिट ट्रांसफर) जागरूकता",
+                home: "डायरेक्ट बेनेफिट ट्रांसफर पोर्टल में आपका स्वागत है। मेनू का उपयोग करें।",
+                status: "अपनी डीबीटी स्थिति ट्रैक करें और अपडेट देखें।",
+                comparison: "DBT सक्षम बनाम आधार लिंक्ड खाता तुलना।",
+                posters: "शैक्षिक पोस्टर डाउनलोड करें।",
+                guidelines: "उपयोग दिशानिर्देश।",
+                support: "सहायता और हेल्पडेस्क जानकारी।",
+                contact: "संपर्क करें: support@dbt.gov.in, 1800-11-4455।",
+                statusTitle: "अपनी DBT स्थिति ट्रैक करें",
+                statusDesc: "नीचे अपना आधार नंबर दर्ज करें।",
+                searchBtn: "स्थिति जांचें",
+                viewDetails: "विस्तार से देखें",
+                downloadPosters: "पोस्टर डाउनलोड करें",
+                viewGuidelines: "दिशानिर्देश देखें",
+                supportFAQs: "सहायता & अक्सर पूछे जाने वाले प्रश्न",
+                contactTitle: "संपर्क",
+                supportHelp: "सहायता केंद्र",
+            },
+            es: {
+                pageTitle: "Conciencia de DBT (Transferencia Directa de Beneficios)",
+                home: "Bienvenido al portal de DBT. Use el menú para explorar.",
+                status: "Rastrea tu estado, actualizaciones y info oficial.",
+                comparison: "Comparación entre DBT habilitado y cuenta vinculada a Aadhaar.",
+                posters: "Descarga posters educativos sobre DBT y Aadhaar.",
+                guidelines: "Guías de uso para vinculación de Aadhaar y DBT.",
+                support: "Soporte y ayuda.",
+                contact: "Contáctanos: support@dbt.gov.in, 1800-11-4455.",
+                statusTitle: "Rastrea tu Estado DBT",
+                statusDesc: "Ingresa tu número Aadhaar para verificar el estado.",
+                searchBtn: "Consultar Estado",
+                viewDetails: "Ver Detalles",
+                downloadPosters: "Descargar Posters",
+                viewGuidelines: "Ver Directrices",
+                supportFAQs: "Soporte & FAQs",
+            },
+            fr: {
+                pageTitle: "Sensibilisation au DBT (Transfert Direct de Bénéfices)",
+                home: "Bienvenue sur le portail DBT. Utilisez le menu pour explorer.",
+                status: "Suivez votre statut DBT, consultez les mises à jour.",
+                comparison: "Compte DBT activé vs compte lié à Aadhaar.",
+                posters: "Téléchargez des posters éducatifs.",
+                guidelines: "Lignes directrices d'utilisation.",
+                support: "Support & Assistance",
+                contact: "Contact: support@dbt.gov.in",
+                statusTitle: "Suivi de votre statut DBT",
+                statusDesc: "Entrez votre numéro Aadhaar pour vérifier le statut.",
+                searchBtn: "Vérifier",
+                viewDetails: "Voir Détails",
+                downloadPosters: "Télécharger Posters",
+                viewGuidelines: "Voir Directives",
+                supportFAQs: "Support & FAQ",
+            },
+            bn: {
+                pageTitle: "DBT (সরাসরি সুবিধা স্থানান্তর) সচেতনতা",
+                home: "DBT পোর্টালে স্বাগতম। মেনু ব্যবহার করে অন্বেষণ করুন।",
+                status: "আপনার DBT স্থিতি ট্র্যাক করুন ও আপডেট দেখুন।",
+                comparison: "DBT সক্রিয় বনাম আধার লিঙ্কড অ্যাকাউন্টের তুলনা।",
+                posters: "শিক্ষামূলক পোস্টার ডাউনলোড করুন।",
+                guidelines: "নির্দেশিকা দেখুন।",
+                support: "সহায়তা ও সহায়তা কেন্দ্র।",
+                contact: "যোগাযোগ: support@dbt.gov.in",
+                statusTitle: "আপনার DBT অবস্থা ট্র্যাক করুন",
+                statusDesc: "নিচে আপনার আধার নম্বর লিখুন।",
+                searchBtn: "অবস্থা দেখুন",
+                viewDetails: "বিস্তারিত দেখুন",
+                downloadPosters: "পোস্টার ডাউনলোড করুন",
+                viewGuidelines: "নির্দেশিকা দেখুন",
+                supportFAQs: "সহায়তা & সাধারণ প্রশ্ন",
+            }
+        };
+
+        // Utility functions
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+        }
+        let currentLang = 'en';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            loadContent(currentPage);
+        }
+
+        function toggleMenu() {
+            document.getElementById('mainNav').classList.toggle('show');
+        }
+
+        let currentPage = 'home';
+
+        // Main navigation function (called by nav links)
+        function loadPage(page) {
+            currentPage = page;
+            loadContent(page);
+        }
+
+        // Content loader function (your existing code)
+        function loadContent(page) {
+            const c = document.getElementById('mainContent');
+            c.innerHTML = ''; // clear previous
+            switch (page) {
+                case 'home':
+                    c.innerHTML = `
+        <section>
+          <h2>${translations[currentLang].pageTitle}</h2>
+          <p>${translations[currentLang].home}</p>
+        </section>
+        <section>
+          <h3>DBT Status Tracker</h3>
+          <p>${translations[currentLang].status}</p>
+          <button onclick="loadPage('status')">${translations[currentLang].searchBtn}</button>
+        </section>
+        <section>
+          <h3>DBT vs Aadhar Linked Account</h3>
+          <p>${translations[currentLang].comparison}</p>
+          <button onclick="loadPage('comparison')">${translations[currentLang].viewDetails}</button>
+        </section>
+        <section>
+          <h3>Posters & Guidelines</h3>
+          <button onclick="loadPage('posters')">${translations[currentLang].downloadPosters}</button>
+          <button onclick="loadPage('guidelines')">${translations[currentLang].viewGuidelines}</button>
+        </section>
+        <section>
+          <h3>Support & Help</h3>
+          <button onclick="loadPage('support')">${translations[currentLang].supportFAQs}</button>
+        </section>`;
+                    break;
+                case 'status':
+                    c.innerHTML = `
+        <h2>${translations[currentLang].statusTitle}</h2>
+        <p>${translations[currentLang].statusDesc}</p>
+        <form onsubmit="event.preventDefault();searchStatus()">
+          <label>Aadhaar Number:</label><br/>
+          <input type="text" id="aadhaarInput" placeholder="Enter Aadhaar" style="padding:8px; width:100%; max-width:300px; margin-top:10px;" required>
+          <br/><br/>
+          <button type="submit">${translations[currentLang].searchBtn}</button>
+        </form>
+        <div id="statusResult" style="margin-top:20px;"></div>`;
+                    break;
+                case 'comparison':
+                    c.innerHTML = `
+        <h2>${translations[currentLang].comparison}</h2>
+        <div id="DBT-vs-AL">
+          <p><i>Of course. This is an excellent question that touches on two critical but distinct financial concepts in India.</i></p>
+          <p>Here is a detailed comparison between a <b>DBT Enabled Account</b> and a <b>Aadhaar Linked Account</b>.</p>
+          
+          <h3>At a Glance: Key Differences</h3>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr class="heading">
+              <th>Feature</th>
+              <th>DBT Enabled Account</th>
+              <th>Aadhaar Linked Account</th>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ccc;">Primary Purpose</td>
+              <td style="padding:8px; border:1px solid #ccc;">Receive government subsidies and benefits directly</td>
+              <td style="padding:8px; border:1px solid #ccc;">Authenticate & facilitate transactions</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ccc;">What it is</td>
+              <td style="padding:8px; border:1px solid #ccc;">A bank account registered with government for DBT payments</td>
+              <td style="padding:8px; border:1px solid #ccc;">A bridge between your bank and Aadhaar via NPCI</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ccc;">Mandatory Link</td>
+              <td style="padding:8px; border:1px solid #ccc;">Bank Account → Government DBT Portal</td>
+              <td style="padding:8px; border:1px solid #ccc;">Bank Account → Aadhaar → NPCI Mapper</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ccc;">Main Use Case</td>
+              <td style="padding:8px; border:1px solid #ccc;">Receiving LPG subsidy, PM-KISAN, pensions, scholarships</td>
+              <td style="padding:8px; border:1px solid #ccc;">Micro ATM withdrawals, DBT receipt, UPI activation</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #ccc;">Optional?</td>
+              <td style="padding:8px; border:1px solid #ccc;">Largely Yes (register account with schemes)</td>
+              <td style="padding:8px; border:1px solid #ccc;">Largely No, required for DBT & AEPS</td>
+            </tr>
+          </table>
+          <h3>Detailed Explanation</h3>
+          <p><b>1. DBT Enabled Account:</b> This is a policy-level concept. The government registers your account to send benefits directly. It’s like your “postal address” for government benefits.</p>
+          <p><b>2. Aadhaar Linked Account:</b> This is the technical link between your Aadhaar and bank account, enabling biometric transactions & direct fund routing.</p>
+          <p>Linking Aadhaar to your bank account is foundational for a DBT-enabled account. You need to link your Aadhaar with your bank, then register your account with schemes. Without this, direct benefits can't be reliably transferred.</p>
+        </div>`;
+                    break;
+                case 'posters':
+                    c.innerHTML = `
+        <h2>${translations[currentLang].posters}</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          <div style="width:200px; border:1px solid #ccc; padding:10px;">
+            <img src="./poster1.png" width="100%" />
+            <p>Poster for Gram People</p>
+            <button onclick="downloadFile('PosterGram.pdf')">Download</button>
+          </div>
+          <div style="width:200px; border:1px solid #ccc; padding:10px;">
+            <img src="./poster2.png" width="100%" />
+            <p>Poster for NGOs</p>
+            <button onclick="downloadFile('PosterNGO.pdf')">Download</button>
+          </div>
+          <div style="width:200px; border:1px solid #ccc; padding:10px;">
+            <img src="./poster3.png" width="100%" />
+            <p>Poster for Schools</p>
+            <button onclick="downloadFile('PosterSchool.pdf')">Download</button>
+          </div>
+          <div style="width:200px; border:1px solid #ccc; padding:10px;">
+            <img src="./poster4.png" width="100%" />
+            <p>Poster for Public Areas</p>
+            <button onclick="downloadFile('PosterPublic.pdf')">Download</button>
+          </div>
+        </div>`;
+                    break;
+                case 'guidelines':
+                    c.innerHTML = `
+        <h2>${translations[currentLang].guidelines}</h2>
+        <ul>
+          <li>Use for educational, government, NGO purposes only.</li>
+          <li>No commercial use or logo modification allowed.</li>
+          <li>Maintain original branding and attribution.</li>
+        </ul>`;
+                    break;
+                case 'support':
+                    c.innerHTML = `
+        <h2>${translations[currentLang].support}</h2>
+        <p>Our support team is available for assistance.</p>
+        <button onclick="callSupport()">Call Support</button>
+        <button onclick="emailSupport()">Email Support</button>
+      `;
+                    break;
+                case 'contact':
+                    c.innerHTML = `
+        <h2>${translations[currentLang].contactTitle}</h2>
+        <p>Email: support@dbt.gov.in</p>
+        <p>Phone: 1800-11-4455</p>
+        <p>Hours: 9AM - 6PM</p>
+      `;
+                    break;
+                case 'faq':
+                    c.innerHTML = `
+        <h2>DBT FAQs</h2>
+        <ul>
+          <li><b>Q1:</b> What is DBT?</li>
+          <li><b>Q2:</b> How to register?</li>
+          <li><b>Q3:</b> How to check status?</li>
+        </ul>`;
+                    break;
+                case 'troubleshoot':
+                    c.innerHTML = `
+        <h2>Troubleshooting Guide</h2>
+        <ul>
+          <li><b>Issue:</b> Payment not received</li>
+          <li><b>Solution:</b> Verify your bank details</li>
+        </ul>`;
+                    break;
+            }
+        }
+
+        // Search status
+        function searchStatus() {
+            const aadhaar = document.getElementById('aadhaarInput').value.trim();
+
+            // Validate Aadhaar number
+            if (!aadhaar || aadhaar.length !== 12 || isNaN(aadhaar)) {
+                alert('Please enter a valid 12-digit Aadhaar number.');
+                return;
+            }
+
+            // Show loading message
+            document.getElementById('statusResult').innerHTML = 'Loading...';
+
+            // Simulate an API call or check
+            setTimeout(() => {
+                // Example condition: replace this with your actual API logic
+                const isDBTEnabled = checkAadhaarDBTStatus(aadhaar);
+
+                if (isDBTEnabled === null) {
+                    document.getElementById('statusResult').innerHTML = '&#128683 Aadhaar not DBT enabled.';
+                } else if (isDBTEnabled) {
+                    document.getElementById('statusResult').innerHTML = '&#x1F389 YOUR ACCOUNT IS "DBT" ENABLED AND ACTIVE.';
+                } else {
+                    document.getElementById('statusResult').innerHTML = '&#128683 Aadhaar not DBT enabled.';
+                }
+            }, 1500);
+        }
+
+        // Mock function to check if Aadhaar is DBT enabled
+        // Replace this with your actual API call or logic
+        function checkAadhaarDBTStatus(aadhaar) {
+            // Example logic: suppose Aadhaar starting with '1234' is DBT enabled
+            if (aadhaar.startsWith('1234')) {
+                return true;
+            }
+            // Example: Aadhaar ending with '9999' is not DBT enabled
+            if (aadhaar.endsWith('9999')) {
+                return false;
+            }
+            // For other Aadhaar numbers, assume not DBT enabled
+            return null; // or false, depending on your logic
+        }
+
+        // Button handlers
+        function redirectWhatsApp() { window.open('https://wa.me/919511018509', '_blank'); }
+        function callSupport() { alert('Calling support...'); }
+        function emailSupport() { alert('Open email client to support@dbt.gov.in'); }
+
+        // Chat functions
+        function toggleChat() {
+            const c = document.getElementById('chatWindow');
+            c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
+        }
+        function toggleWhatsApp() {
+            const c = document.getElementById('whatsappWindow');
+            c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
+        }
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            const div = document.createElement('div');
+            div.innerHTML = `<b>You:</b> ${msg}`;
+            document.getElementById('chatBody').appendChild(div);
+            input.value = '';
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.innerHTML = `<b>AI:</b> Sorry, this is a demo chat. How can I help?`;
+                document.getElementById('chatBody').appendChild(reply);
+                document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+            }, 1000);
+        }
+        function sendWhatsAppMessage() {
+            const input = document.getElementById('whatsappInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            const div = document.createElement('div');
+            div.innerHTML = `<b>You:</b> ${msg}`;
+            document.getElementById('whatsappBody').appendChild(div);
+            input.value = '';
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.innerHTML = `<b>Support:</b> Thank you! We will get back to you soon.`;
+                document.getElementById('whatsappBody').appendChild(reply);
+                document.getElementById('whatsappBody').scrollTop = document.getElementById('whatsappBody').scrollHeight;
+            }, 1000);
+        }
+
+        // Add this to close menu when any nav link is clicked
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('#mainNav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    document.getElementById('mainNav').classList.remove('show');
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
